@@ -1,17 +1,22 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Headline/>
+    <Score value="0"/>
+    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
+import Headline from './components/Headline.vue'
+import Score from './components/Score.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    // HelloWorld,
+    Headline,
+    Score,
   }
 }
 </script>
@@ -23,6 +28,22 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin: 0;
+  padding: 0;
 }
+
+
+body {
+  margin:0;
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
 </style>
