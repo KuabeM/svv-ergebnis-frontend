@@ -1,21 +1,20 @@
 <template>
     <div class="score">
-        
         <div class="score-inputs">
-            <Display v-bind:value="value" />:
-            <Display v-bind:value="value" />
+            <DisplayNum :score="value" />:
+            <DisplayNum :score="value" />
         </div>
     </div>
 </template>
 
 
 <script>
-import Display from './Display.vue'
+import DisplayNum from './DisplayNum.vue'
 
 export default {
     name: 'Score',
     components: {
-        Display,
+        DisplayNum,
     },
     props: {
         value: Number,

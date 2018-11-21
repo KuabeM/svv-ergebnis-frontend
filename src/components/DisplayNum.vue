@@ -1,16 +1,18 @@
 <template>
     <div class="display">
-        <input type="number" min="0" max="99" class="result" v-bind:value="value"/>
+        <input type="number" min="0" max="99" class="result" v-model.number="score" v-on:input="$emit('score-change', score)"/>
     </div>
 </template>
 
 
 <script>
 export default {
-    name: 'Display',
-    props: {
-        value: Number,
-    }
+    name: 'DisplayNum',
+    data: function () {
+        return {
+            score: 0
+        }
+    },
 }
 </script>
 
