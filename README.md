@@ -1,5 +1,8 @@
 # svv-frontend
 
+[Vue.js](https://vuejs.org/) based frontend to send http request to backend.
+
+
 ## Project setup
 ```
 yarn install
