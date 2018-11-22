@@ -18,6 +18,10 @@
 <script>
 import DisplayNum from './DisplayNum.vue'
 import DisplayText from './DisplayText.vue'
+// var axios = require('axios')
+// import * as http from "http";
+// const httpModule = require("http");
+// import VueResource from 'vue-resource';
 
 export default {
     name: 'Competitors',
@@ -30,7 +34,9 @@ export default {
             nameHome: "Heim",
             nameAway: "Gast",
             scoreHome: 0,
-            scoreAway: 0
+            scoreAway: 0,
+            backend_url: 'localhost:3000',
+            postResult: []
         }
     },
     methods: {
@@ -49,9 +55,44 @@ export default {
             }
         },
         send_request() {
-            var msg = this.nameHome + ', ' + this.nameAway;
-            console.log(msg);
-        }
+            var msg = { 
+                "home": this.nameHome,
+                "away": this.nameAway,
+                "scoreHome": this.scoreHome,
+                "scoreAway": this.scoreAway,
+            };
+            var headers = { "Content-Type": "application/json" };
+            // httpModule.request({
+            //     url: this.backend_url,
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     content: JSON.stringify({ 
+            //         "home": this.nameHome,
+            //         "away": this.nameAway,
+            //         "scoreHome": this.scoreHome,
+            //         "scoreAway": this.scoreAway,
+            //     }),
+            // }).then((response) => {
+            //         var result = response.content.toJSON();
+            //         console.log(result);
+            //     }, error => {
+            //         console.log('we caught an error');
+            //         console.error(error);
+            // });
+            // this.$http.get('http://localhost:3000').then(response => {
+            //     var someData = response.body;
+            //     console.log(someData);
+            // }, response => {
+            //     console.log(response);
+            // });
+            this.$http.post('http://localhost:3000', msg, headers).then(response => {
+                console.log('status: ' + response.status)
+                var someData = response.body;
+                console.log(someData);
+            }, response => {
+                console.log('status: ' + response.status);
+            });
+        },
     },
 }
 
