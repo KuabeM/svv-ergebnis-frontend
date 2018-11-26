@@ -9,7 +9,9 @@
             <DisplayNum v-model="scoreHome"  v-on:score-change="updateScore(2, $event)"/>
         </div>
         <div class="control-area">
-            <button v-on:click="send_request()">Update</button>
+            <button v-on:click="send_data_req()">Update</button><i class="spacing"/>
+            <button v-on:click="send_time_req('start')">Start Timer</button><i class="spacing"/>
+            <button v-on:click="send_get()">Stop Timer</button>
         </div>
     </div>
 </template>
@@ -35,7 +37,7 @@ export default {
             nameAway: "Gast",
             scoreHome: 0,
             scoreAway: 0,
-            backend_url: 'localhost:3000',
+            backend_url: '192.168.0.50:3000',
             postResult: []
         }
     },
@@ -54,45 +56,56 @@ export default {
                 this.scoreAway = val;
             }
         },
-        send_request() {
-            var msg = { 
-                "home": this.nameHome,
-                "away": this.nameAway,
-                "scoreHome": this.scoreHome,
-                "scoreAway": this.scoreAway,
+        send_data_req() {
+            // var msg = { 
+            //     "home": this.nameHome,
+            //     "away": this.nameAway,
+            //     "scoreHome": this.scoreHome,
+            //     "scoreAway": this.scoreAway,
+            // };
+            var msg = {"home": this.scoreHome, "away": this.scoreAway, "minutes": 0};
+            var headers = { "Content-Type": "application/json",
+                "Access-Control-Allow-Methods": "POST",
+                "Access-Control-Allow-Origin": '*',
+                "Access-Control-Allow-Headers": "Content-Type",
+                // "X-PINGOTHER": "pingpong",
             };
-            var headers = { "Content-Type": "application/json" };
-            // httpModule.request({
-            //     url: this.backend_url,
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     content: JSON.stringify({ 
-            //         "home": this.nameHome,
-            //         "away": this.nameAway,
-            //         "scoreHome": this.scoreHome,
-            //         "scoreAway": this.scoreAway,
-            //     }),
-            // }).then((response) => {
-            //         var result = response.content.toJSON();
-            //         console.log(result);
-            //     }, error => {
-            //         console.log('we caught an error');
-            //         console.error(error);
-            // });
-            // this.$http.get('http://localhost:3000').then(response => {
-            //     var someData = response.body;
-            //     console.log(someData);
-            // }, response => {
-            //     console.log(response);
-            // });
-            this.$http.post('http://localhost:3000', msg, headers).then(response => {
+            this.$http.post('http://'+this.backend_url+'/competitor', msg, headers).then(response => {
                 console.log('status: ' + response.status)
                 var someData = response.body;
                 console.log(someData);
             }, response => {
                 console.log('status: ' + response.status);
+                console.log('body: ' + response);
             });
         },
+        send_time_req(variant) {
+            if (variant == "start") {
+                var msg = {"time": 0,};
+            } else if (variant == "stop") {
+                msg = {"time": -1,};
+            }
+            var headers = { "Content-Type": "application/json" };
+            this.$http.post('http://'+this.backend_url, msg, headers).then(response => {
+                console.log('status: ' + response.status)
+                var someData = response.body;
+                console.log(someData);
+            }, response => {
+                console.log('status: ' + response.status);
+                console.log('body: ' + response.body);
+            });
+        },
+        send_get() {
+            var headers = { "Content-Type": "text/plain" };
+            this.$http.get('http://'+this.backend_url, headers).then(response => {
+                console.log('status: ' + response.status)
+                var someData = response.body;
+                console.log(someData);
+            }, response => {
+                console.log('status: ' + response.status);
+                console.log('body: ' + response.body);
+            });
+        }
     },
 }
 
@@ -116,6 +129,10 @@ export default {
 
 .control-area {
     margin-top: 2vh;
+}
+
+.spacing {
+    margin-left: 1vh;
 }
 
 </style>
