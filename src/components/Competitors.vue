@@ -1,6 +1,9 @@
 <template>
     <div class="competitors">
         <div class="inputs-row">
+            <DisplayNum v-model="minutes" v-on:score-change="updateScore(0, $event)" />
+        </div>
+        <div class="inputs-row">
             <DisplayText  v-model="nameHome" v-on:team-change="updateTeam(1, $event)"/>:
             <DisplayText  v-model="nameAway" v-on:team-change="updateTeam(2, $event)"/>
         </div>
@@ -11,7 +14,8 @@
         <div class="control-area">
             <button v-on:click="send_data_req()">Update</button><i class="spacing"/>
             <button v-on:click="send_time_req('start')">Start Timer</button><i class="spacing"/>
-            <button v-on:click="send_get()">Stop Timer</button>
+            <button v-on:click="send_time_req('set')">Set Timer</button><i class="spacing"/>
+            <button v-on:click="send_time_req('stop')">Stop Timer</button>
         </div>
     </div>
 </template>
@@ -20,10 +24,6 @@
 <script>
 import DisplayNum from './DisplayNum.vue'
 import DisplayText from './DisplayText.vue'
-// var axios = require('axios')
-// import * as http from "http";
-// const httpModule = require("http");
-// import VueResource from 'vue-resource';
 
 export default {
     name: 'Competitors',
@@ -37,7 +37,8 @@ export default {
             nameAway: "Gast",
             scoreHome: 0,
             scoreAway: 0,
-            backend_url: '192.168.0.50:3000',
+            minutes: 0,
+            backend_url: '192.168.0.50:4000',
             postResult: []
         }
     },
@@ -52,25 +53,40 @@ export default {
         updateScore(HoA, val) {
             if (HoA == 1) {
                 this.scoreHome = val;
-            } else {
+            } else if (HoA == 2){
                 this.scoreAway = val;
+            } else if (HoA == 0){
+                this.minutes = val;
+            } else {
+                console.log("bad option");
             }
         },
         send_data_req() {
-            // var msg = { 
-            //     "home": this.nameHome,
-            //     "away": this.nameAway,
-            //     "scoreHome": this.scoreHome,
-            //     "scoreAway": this.scoreAway,
-            // };
-            var msg = {"home": this.scoreHome, "away": this.scoreAway, "minutes": 0};
-            var headers = { "Content-Type": "application/json",
-                "Access-Control-Allow-Methods": "POST",
-                "Access-Control-Allow-Origin": '*',
-                "Access-Control-Allow-Headers": "Content-Type",
-                // "X-PINGOTHER": "pingpong",
+            this.send_teams_req();
+            this.send_score_req();
+        },
+        send_teams_req() {
+            var msg = { 
+                "name_home": this.nameHome,
+                "name_away": this.nameAway,
             };
-            this.$http.post('http://'+this.backend_url+'/competitor', msg, headers).then(response => {
+            var headers = { "Content-Type": "application/json",};
+            this.$http.post('http://'+this.backend_url+'/teams', msg, headers).then(response => {
+                console.log('status: ' + response.status)
+                var someData = response.body;
+                console.log(someData);
+            }, response => {
+                console.log('status: ' + response.status);
+                console.log('body: ' + response);
+            });
+        },
+        send_score_req() {
+            var msg = { 
+                "score_home": this.scoreHome,
+                "score_away": this.scoreAway,
+            };
+            var headers = { "Content-Type": "application/json",};
+            this.$http.post('http://'+this.backend_url+'/score', msg, headers).then(response => {
                 console.log('status: ' + response.status)
                 var someData = response.body;
                 console.log(someData);
@@ -81,12 +97,14 @@ export default {
         },
         send_time_req(variant) {
             if (variant == "start") {
-                var msg = {"time": 0,};
+                var msg = {"min": 254,};
             } else if (variant == "stop") {
-                msg = {"time": -1,};
+                msg = {"min": 255,};
+            } else if (variant == "set") {
+                msg = {"min": this.minutes,};
             }
             var headers = { "Content-Type": "application/json" };
-            this.$http.post('http://'+this.backend_url, msg, headers).then(response => {
+            this.$http.post('http://'+this.backend_url+'/minutes', msg, headers).then(response => {
                 console.log('status: ' + response.status)
                 var someData = response.body;
                 console.log(someData);
@@ -96,14 +114,14 @@ export default {
             });
         },
         send_get() {
-            var headers = { "Content-Type": "text/plain" };
-            this.$http.get('http://'+this.backend_url, headers).then(response => {
+            var headers = { "Content-Type": "application/json",};
+            this.$http.get('http://'+this.backend_url+'/', headers).then(response => {
                 console.log('status: ' + response.status)
                 var someData = response.body;
                 console.log(someData);
             }, response => {
                 console.log('status: ' + response.status);
-                console.log('body: ' + response.body);
+                console.log('body: ' + response);
             });
         }
     },

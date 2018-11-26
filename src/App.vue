@@ -76,4 +76,8 @@ button:hover {
     border-color: #1e7e34;
 }
 
+button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(40,167,69,.5);
+}
+
 </style>
