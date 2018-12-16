@@ -1,7 +1,7 @@
 <template>
     <div class="competitors">
         <div class="inputs-row">
-            <DisplayNum v-model="minutes" v-on:score-change="updateScore(0, $event)" />
+            <span class="time">Minute:</span><DisplayNum v-model="minutes" v-on:score-change="updateScore(0, $event)" />
         </div>
         <div class="inputs-row">
             <DisplayText  v-model="nameHome" v-on:team-change="updateTeam(1, $event)"/>:
@@ -16,6 +16,9 @@
             <button v-on:click="send_time_req('start')">Start Timer</button><i class="spacing"/>
             <button v-on:click="send_time_req('set')">Set Timer</button><i class="spacing"/>
             <button v-on:click="send_time_req('stop')">Stop Timer</button>
+        </div>
+        <div class="response">
+            {{ response }}
         </div>
     </div>
 </template>
@@ -38,8 +41,9 @@ export default {
             scoreHome: 0,
             scoreAway: 0,
             minutes: 0,
-            backend_url: '192.168.0.50:4000',
-            postResult: []
+            backend_url: '192.168.0.41:3000',
+            postResult: [],
+            response: ""
         }
     },
     methods: {
@@ -72,9 +76,7 @@ export default {
             };
             var headers = { "Content-Type": "application/json",};
             this.$http.post('http://'+this.backend_url+'/teams', msg, headers).then(response => {
-                console.log('status: ' + response.status)
-                var someData = response.body;
-                console.log(someData);
+                this.response = response.body;
             }, response => {
                 console.log('status: ' + response.status);
                 console.log('body: ' + response);
@@ -87,9 +89,7 @@ export default {
             };
             var headers = { "Content-Type": "application/json",};
             this.$http.post('http://'+this.backend_url+'/score', msg, headers).then(response => {
-                console.log('status: ' + response.status)
-                var someData = response.body;
-                console.log(someData);
+                this.response = response.body;
             }, response => {
                 console.log('status: ' + response.status);
                 console.log('body: ' + response);
@@ -105,9 +105,7 @@ export default {
             }
             var headers = { "Content-Type": "application/json" };
             this.$http.post('http://'+this.backend_url+'/minutes', msg, headers).then(response => {
-                console.log('status: ' + response.status)
-                var someData = response.body;
-                console.log(someData);
+                this.response = response.body;
             }, response => {
                 console.log('status: ' + response.status);
                 console.log('body: ' + response.body);
@@ -116,9 +114,7 @@ export default {
         send_get() {
             var headers = { "Content-Type": "application/json",};
             this.$http.get('http://'+this.backend_url+'/', headers).then(response => {
-                console.log('status: ' + response.status)
-                var someData = response.body;
-                console.log(someData);
+                this.response = response.body;
             }, response => {
                 console.log('status: ' + response.status);
                 console.log('body: ' + response);
@@ -151,6 +147,15 @@ export default {
 
 .spacing {
     margin-left: 1vh;
+}
+
+.response {
+    margin-top: 3vh;
+    font-size: 0.5em;
+}
+
+.time {
+    font-size: 0.5em;
 }
 
 </style>

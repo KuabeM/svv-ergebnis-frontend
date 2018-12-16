@@ -33,5 +33,5 @@ export default {
     input.result:focus {
         background-color:  #ffffff;
         transition: background-color 300ms linear;
-    } 
+    }
 </style>
